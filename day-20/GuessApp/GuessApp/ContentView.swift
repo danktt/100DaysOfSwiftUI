@@ -8,29 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            HStack(spacing: 20) {
-                Text("1")
-                Text("2")
-                Text("3")
+    var body: some View {NavigationView{
+        Section{
+            ScrollView{
+                VStack(spacing: 40) {
+                    Text("Hello, world!").padding()
+                    
+                    Text("This is another text view")
+                    Text("This is another text view")
+                    Text("This is another text view")
+                    Text("This is another text view")
+                    Text("This is another text view")
+                    
+                }
             }
-            HStack(spacing: 20) {
-                Text("4")
-                Text("5")
-                Text("6")
-            }
-            HStack(spacing: 20) {
-                Text("7")
-                Text("8")
-                Text("9")
-            }
-        }
+        }}
     }
-    
-    struct ContentView_Previews: PreviewProvider {
-        static var previews: some View {
-            ContentView()
-        }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
     }
 }
