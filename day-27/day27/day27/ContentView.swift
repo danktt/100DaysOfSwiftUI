@@ -8,7 +8,7 @@ import CoreML
 import SwiftUI
 
 struct ContentView: View {
-    
+    let cups = [1,2,3,4,5,6,7,8,9,10]
     @State private var wakeUp = defaultWakeTime
     @State private var sleepAmount = 8.0
     @State private var coffeeAmount = 1
@@ -29,8 +29,8 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView{
-            Form {
-                VStack(alignment: .leading, spacing: 0){
+            Form{
+                Section{
                     Text("When you want wake up?")
                         .font(.headline)
                     
@@ -38,7 +38,7 @@ struct ContentView: View {
                         .labelsHidden()
                 }
                 
-                VStack(alignment: .leading, spacing: 0){
+                Section{
                     Text("Desired amount of sleep")
                         .font(.headline)
                     
@@ -46,23 +46,28 @@ struct ContentView: View {
                     
                 }
                 
-                VStack(alignment: .leading, spacing: 0){
+                Section{
                     Text("Daily coffee intake")
                         .font(.headline)
                     
                     
-                    Stepper(coffeeAmount == 1 ? "1 cup": "\(coffeeAmount) cup", value: $coffeeAmount, in: 1...20)
+                    
+                    Picker(coffeeAmount == 1 ? "1 cup": "\(coffeeAmount) cups", selection: $coffeeAmount ){
+                        ForEach(cups, id: \.self){
+                            Text("\($0)")
+                        }
+                    }.pickerStyle(.segmented)
                 }
             }
             .navigationTitle("BetterRest")
             .toolbar {
                 Button("Calculation", action: calculateBedtime)
-                    
+                
             }
             .alert(alertTitle, isPresented: $showingAlert){
                 Button("Ok"){}
             }message: {
-                Text(alertMessage)
+                Text(alertMessage).font(Font.system(size: 30))
             }
         }
         
