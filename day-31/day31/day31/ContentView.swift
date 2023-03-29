@@ -13,6 +13,14 @@ struct ContentView: View {
     @State private var rootWord = ""
     @State private var newWord = ""
     
+    
+    @State private var errorTitle = ""
+    @State private var errorMessage = ""
+    @State private var showingError = false
+
+
+
+
     var body: some View {
         NavigationView {
             List {
@@ -32,6 +40,11 @@ struct ContentView: View {
             .navigationTitle(rootWord)
             .onSubmit(addNewWord)
             .onAppear(perform: startGame)
+            .alert(errorTitle, isPresented: $showingError) {
+                Button("Ok", role: .cancel){}
+            } message: {
+                Text(errorMessage)
+            }
         }
         
     }
@@ -42,8 +55,20 @@ struct ContentView: View {
         // exit if the remaining string is empty
         guard answer.count > 0 else { return }
 
-        // extra validation to come
+        guard isOriginal(word: answer) else {
+             wordError(tittle: "Word used already", message: "Be more original!")
+            return
+        }
         
+        guard isPossible(word: answer) else {
+            wordError(tittle: "Word not possible", message: "You can't spell the word from '\(rootWord)'!")
+            return
+        }
+        guard isReal(word: answer) else {
+            wordError(tittle: "Word not recognized", message: "You can't just make them up, you know!")
+            return
+            
+        }
         usedWords.insert(answer, at: 0)
         newWord = ""
     }
@@ -66,6 +91,43 @@ struct ContentView: View {
 
         // If were are *here* then there was a problem – trigger a crash and report the error
         fatalError("Could not load start.txt from bundle.")
+    }
+    func isPossible(word: String) -> Bool {
+        var tempWord = rootWord
+
+        for letter in word {
+            if let pos = tempWord.firstIndex(of: letter) {
+                tempWord.remove(at: pos)
+            } else {
+                return false
+            }
+        }
+
+        return true
+    }
+    func isOriginal(word: String) -> Bool {
+        var tempWord = rootWord
+        
+        for letter in word {
+            if  let pos = tempWord.firstIndex(of: letter){
+                tempWord.remove(at: pos)
+            }else {
+                return false
+            }
+            
+        }
+        return true
+    }
+    
+    func isReal(word: String) -> Bool {
+        let checker = UITextChecker()
+        let range = NSRange(location: 0, length: word.utf16.count)
+        let missepelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
+        return missepelledRange.location == NSNotFound
+    }
+    
+    func wordError(tittle: String, message: String)  {
+        
     }
 }
 
