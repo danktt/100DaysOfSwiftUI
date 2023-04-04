@@ -7,42 +7,58 @@
 
 import SwiftUI
 
-class User: ObservableObject {
-   @Published var firstName = ""
-   @Published var lastName = ""
-}
-
-class Work: ObservableObject{
-    @Published var doing = ""
-    @Published var amout = Int()
-}
 
 struct ContentView: View {
+   
+    @StateObject var expenses = Expenses()
     
-    @StateObject var user = User()
-    @StateObject var work = Work()
+    @State private var showingAddExpense = false
+    
+    func removeItems(at offsets: IndexSet) {
+        expenses.items.remove(atOffsets: offsets)
+    }
+    
     
     var body: some View {
-        VStack {
+        NavigationView{
+            List{
+                ForEach(expenses.items){item in
+                    HStack {
+                            VStack(alignment: .leading) {
+                                Text(item.name)
+                                    .font(.headline)
+                                Text(item.type)
+                            }
+
+                            Spacer()
+                            Text(item.amount, format: .currency(code: "USD"))
+                        }
+                }
+                .onDelete(perform: removeItems)
+            }
+            .navigationTitle("iExpense")
+            .toolbar {
+                Button{
+                  showingAddExpense = true
+                   
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
+            .sheet(isPresented: $showingAddExpense) {
+                AddView(expenses: expenses)
+            }
             
-            Text("Hello, my name is \(user.firstName) \(user.lastName)")
-            Text("I'm\(work.doing) and I recive  \(work.amout)")
-            
-            TextField("First namer", text: $user.firstName)
-            TextField("Last namer", text: $user.lastName)
-            
-            TextField("What I do:", text: $work.doing)
-            TextField("I recive", value: $work.amout , formatter: NumberFormatter())
         }
-        .padding()
+        
     }
-}
-
-
-
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+    
+    
+    
+    
+    struct ContentView_Previews: PreviewProvider {
+        static var previews: some View {
+            ContentView()
+        }
     }
 }
