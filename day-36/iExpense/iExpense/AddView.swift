@@ -14,9 +14,12 @@ struct AddView: View {
     @State private var name = ""
     @State private var type = "Personal"
     @State private var amount = 0.0
+    @State private var typeCurrency = ""
     
     
     let types = ["Business", "Personal"]
+    
+    let typeCurrencys = ["USD", "EUR", "JPY"]
     
     var body: some View {
         NavigationView {
@@ -28,8 +31,14 @@ struct AddView: View {
                                 Text($0)
                             }
                         }
-
-                        TextField("Amount", value: $amount, format: .currency(code: "USD"))
+                        
+                        Picker("",selection: $typeCurrency){
+                            ForEach(typeCurrencys, id: \.self){
+                                Text($0)
+                            }
+                        }.pickerStyle(.segmented)
+                        
+                        TextField("Amount", value: $amount, format: .currency(code: typeCurrency))
                             .keyboardType(.decimalPad)
                         
                        
@@ -38,7 +47,7 @@ struct AddView: View {
                     .navigationTitle("Add new expense")
                     .toolbar{
                         Button("Save"){
-                            let item = ExpenseItem(name: name, type: type, amount: amount)
+                            let item = ExpenseItem(name: name, type: type, amount: amount, currency: typeCurrency)
                             expenses.items.append(item)
                             dismiss()
                         }
